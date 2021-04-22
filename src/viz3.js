@@ -88,7 +88,7 @@ ORDER BY ?year ?roleLabel
         .attr("x", 0)
         .attr("y", 0)
         .style("opacity", 0)
-        .style("font-size", 17)
+        .style("font-size", 30)
 
     var mouseover = function(d) {
         Tooltip.style("opacity", 1)
@@ -107,7 +107,7 @@ ORDER BY ?year ?roleLabel
         //console.log( d3.event )
         let text = "";
         if (roleGroups[d.key] != groups.roles[d.key]) {
-            text = roleGroups[d.key] + ":" + groups.roles[d.key];
+            text = roleGroups[d.key] + ": " + groups.roles[d.key];
         } else {
             text = roleGroups[d.key];
         }
@@ -137,7 +137,7 @@ ORDER BY ?year ?roleLabel
    *   This function handles the graph's sizing.
    */
    function setSizing () {
-    let graphWidth = Math.min(self.innerWidth, 2000);
+    let graphWidth = Math.min(self.innerWidth, 1500);
     let graphHeight = graphWidth * 0.6;
 
     svgSize = {

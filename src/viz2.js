@@ -1,9 +1,9 @@
 
 
 // set the dimensions and margins of the graph
-let graphWidth = Math.min(self.innerWidth, 2000);
+let graphWidth = Math.min(self.innerWidth, 1500);
 let graphHeight = graphWidth * 0.6;
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
+var margin = {top: 20, right: 60, bottom: 160, left: 60},
     width = graphWidth - margin.left - margin.right,
     height = graphHeight * 0.6 - margin.top - margin.bottom;
 
@@ -49,7 +49,13 @@ d3.csv('./data2.csv').then((data) => {
   // add the x Axis
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
+      .call(d3.axisBottom(x))
+      .selectAll("text")	
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-65)")
+        .style("font-size", 14);
 
   // add the y Axis
   svg.append("g")

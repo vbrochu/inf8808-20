@@ -373,7 +373,7 @@ Promise.all([
      */
     function setSizingHistogram () {
       //boundsHistogram = d3.select('#viz5').node().getBoundingClientRect()
-	  let graphWidth = Math.min(self.innerWidth, 2000);
+	  let graphWidth = Math.min(self.innerWidth, 1500);
 	  let graphHeight = 350;
 
       svgSizeHistogram = {

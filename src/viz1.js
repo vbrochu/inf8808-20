@@ -220,7 +220,7 @@ Promise.all([
 	
 	function setSizingWaffle () {
 		boundsWaffle = d3.select('#viz1').node().getBoundingClientRect()
-		let graphWidth = Math.min(self.innerWidth, 2000);
+		let graphWidth = Math.min(self.innerWidth, 1500);
     	let graphHeight = 600;
 
 		svgSizeWaffle = {
