@@ -13,19 +13,36 @@
       <body>
         <header>
             <h1>
-              Viz3
+              Pré Release
             </h1>
             <h2>
-              Viz3
+              Équipe 20
             </h2>
         </header>
         <main>
-          <div class='graph-viz3'>
+          <div class="viz-header"><h1>Visualisation 1</h1></div>
+          <div class="viz" id="viz1">
+            <svg class="waffle-svg"></svg>
+          </div>
+          <div class="viz-header"><h1>Visualisation 2</h1></div>
+          <div class='viz graph-viz2'>
+            <svg id='viz2'>
+            </svg>
+          </div>
+          <div class="viz-header"><h1>Visualisation 3</h1></div>
+          <div class='viz graph-viz3'>
             <svg id='viz3'>
             </svg>
           </div>
+          <div class="viz-header"><h1>Visualisation 4</h1></div>
+          <div class="viz" id="viz5">
+            <svg class="histogram-svg"></svg>
+          </div>
         </main>
         <script src="https://d3js.org/d3.v5.js"></script>
-        <script type="module" src="scripts/viz3.js"></script>
+        <script type="module" src="src/viz1.js"></script>
+        <script type="module" src="src/viz2.js"></script>
+        <script type="module" src="src/viz3.js"></script>
+        <script type="module" src="src/viz5.js"></script>
       </body>
 </html>
