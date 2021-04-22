@@ -349,7 +349,7 @@ ORDER BY ?year ?roleLabel
     }).y1(function (d) {
       return yScale(d[1]);
     });
-    var Tooltip = g.append("text").attr("x", 0).attr("y", 0).style("opacity", 0).style("font-size", 17);
+    var Tooltip = g.append("text").attr("x", 0).attr("y", 0).style("opacity", 0).style("font-size", 30);
 
     var mouseover = function mouseover(d) {
       Tooltip.style("opacity", 1);
@@ -365,7 +365,7 @@ ORDER BY ?year ?roleLabel
       var text = "";
 
       if (roleGroups[d.key] != groups.roles[d.key]) {
-        text = roleGroups[d.key] + ":" + groups.roles[d.key];
+        text = roleGroups[d.key] + ": " + groups.roles[d.key];
       } else {
         text = roleGroups[d.key];
       }
@@ -387,7 +387,7 @@ ORDER BY ?year ?roleLabel
    */
 
   function setSizing() {
-    var graphWidth = Math.min(self.innerWidth, 2000);
+    var graphWidth = Math.min(self.innerWidth, 1500);
     var graphHeight = graphWidth * 0.6;
     svgSize = {
       width: graphWidth,
@@ -597,7 +597,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57831" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61235" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -119,13 +119,13 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   return newRequire;
 })({"src/viz2.js":[function(require,module,exports) {
 // set the dimensions and margins of the graph
-var graphWidth = Math.min(self.innerWidth, 2000);
+var graphWidth = Math.min(self.innerWidth, 1500);
 var graphHeight = graphWidth * 0.6;
 var margin = {
   top: 20,
-  right: 20,
-  bottom: 30,
-  left: 40
+  right: 60,
+  bottom: 160,
+  left: 60
 },
     width = graphWidth - margin.left - margin.right,
     height = graphHeight * 0.6 - margin.top - margin.bottom; // set the ranges
@@ -158,7 +158,7 @@ d3.csv('./data2.csv').then(function (data) {
     return height - y(d.count);
   }); // add the x Axis
 
-  svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x)); // add the y Axis
+  svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x)).selectAll("text").style("text-anchor", "end").attr("dx", "-.8em").attr("dy", ".15em").attr("transform", "rotate(-65)").style("font-size", 14); // add the y Axis
 
   svg.append("g").call(d3.axisLeft(y));
 });
@@ -190,7 +190,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57831" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61235" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

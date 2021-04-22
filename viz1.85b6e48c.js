@@ -2774,7 +2774,7 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
 
     function setSizingWaffle() {
       boundsWaffle = d3.select('#viz1').node().getBoundingClientRect();
-      var graphWidth = Math.min(self.innerWidth, 2000);
+      var graphWidth = Math.min(self.innerWidth, 1500);
       var graphHeight = 600;
       svgSizeWaffle = {
         width: graphWidth,
@@ -2840,7 +2840,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57831" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61235" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
