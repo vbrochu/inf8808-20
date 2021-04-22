@@ -2602,6 +2602,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.appendAxes = appendAxes;
+exports.updateXScale = updateXScale;
+exports.drawXAxis = drawXAxis;
 exports.getContentsWaffle = getContentsWaffle;
 exports.generateG = generateG;
 exports.setCanvasSizeWaffle = setCanvasSizeWaffle;
@@ -2618,12 +2621,45 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
+/*
+ * Appends an SVG g element which will contain the y axis.
+ *
+ * @param {*} g D3 Selection of g
+ */
+function appendAxes(g) {
+  g.append('g').attr('class', 'x axis');
+}
+/*
+ * defines the x scale.
+ *
+ * @param {*} scale The x scale
+ * @param {number} width Width of the graph
+ */
+
+
+function updateXScale(scale, width) {
+  //ECHELLE FIXE
+  scale.domain([1985, 2019]).range([0, 570]);
+}
+/**
+ * Draws the X axis at the bottom of the diagram.
+ *
+ * @param {*} xScale The scale to use to draw the axis
+ * @param {number} height The height of the graphic
+ */
+
+
+function drawXAxis(xScale, height) {
+  d3.select('#viz1 .x.axis').attr('transform', 'translate( 0, ' + height + ')').call(d3.axisBottom(xScale).tickValues(["1985", "2019"]).tickFormat(d3.format("d")));
+}
 /**
  * Defines the contents of the tooltip for the waffle.
  *
  * @param {object} c The data associated to the hovered element
  * @returns {string} The tooltip contents
  */
+
+
 function getContentsWaffle(c) {
   var labelTitre = "<div class=\"tooltip-title\">Film : " + c[0].titreOriginal + "</div>";
   var labelAnneeSortie = "<div class=\"tooltip-title\">Année de sortie : " + c[0].anneeSortie + "</div>";
@@ -2762,6 +2798,7 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
   var dict_noms_car; //liste [film id, anneeSortie, participants] triée par années de sortie
 
   var sorted_filmo_part;
+  var xScale = d3.scaleLinear();
   Promise.all([d3.csv('./Nom.csv'), d3.csv('./Fonction.csv'), d3.csv('./Filmo.csv'), d3.csv('./Filmo_Generique.csv')]).then(function (fichiers) {
     //preoprocess des fichiers
     dict_nomsId = preprocess.buildDictNoms(fichiers[0]);
@@ -2807,6 +2844,9 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
       roles.forEach(function (role) {
         return setClickHandlerWaffle(role);
       });
+      updateXScale(xScale, graphSizeWaffle.width);
+      appendAxes(g);
+      drawXAxis(xScale, graphSizeWaffle.height);
     }
   }).catch(function (err) {
     console.log('Les .csv n\'ont pas pu être lus');
@@ -2840,7 +2880,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61235" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63462" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

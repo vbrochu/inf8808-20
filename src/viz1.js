@@ -5,6 +5,40 @@ import * as preprocess from './preprocess.js'
 
 import d3Tip from 'd3-tip'
 
+/*
+ * Appends an SVG g element which will contain the y axis.
+ *
+ * @param {*} g D3 Selection of g
+ */
+export function appendAxes (g) {
+  g.append('g')
+    .attr('class', 'x axis')
+}
+
+
+/*
+ * defines the x scale.
+ *
+ * @param {*} scale The x scale
+ * @param {number} width Width of the graph
+ */
+export function updateXScale (scale, width) {
+    //ECHELLE FIXE
+    scale.domain([1985, 2019]).range([0,570]);
+}
+
+
+/**
+ * Draws the X axis at the bottom of the diagram.
+ *
+ * @param {*} xScale The scale to use to draw the axis
+ * @param {number} height The height of the graphic
+ */
+export function drawXAxis (xScale, height) {
+  d3.select('#viz1 .x.axis')
+    .attr('transform', 'translate( 0, ' + height + ')')
+    .call(d3.axisBottom(xScale).tickValues(["1985","2019"]).tickFormat(d3.format("d")))
+}
 
 /**
  * Defines the contents of the tooltip for the waffle.
@@ -199,6 +233,7 @@ export function draw (sorted_filmo_part, height, width, essential_function, tip)
 	//liste [film id, anneeSortie, participants] triée par années de sortie
 	let sorted_filmo_part
 
+	const xScale = d3.scaleLinear()
 
 Promise.all([
     d3.csv('./Nom.csv'),
@@ -263,6 +298,10 @@ Promise.all([
 		draw(sorted_filmo_part, graphSizeWaffle.height, graphSizeWaffle.width, 'Chroniqueur', tipWaffle)
 		
 		roles.forEach(role => setClickHandlerWaffle(role))
+
+		updateXScale(xScale, graphSizeWaffle.width)
+        appendAxes(g)
+        drawXAxis(xScale, graphSizeWaffle.height)
 	}
 
 	
