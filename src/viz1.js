@@ -24,7 +24,7 @@ export function appendAxes(g) {
  */
 export function updateXScale(scale, width) {
     //ECHELLE FIXE
-    scale.domain([1985, 2019]).range([0, 570]);
+    scale.domain([1985, 2019]).range([0, 414]);
 }
 
 
@@ -93,12 +93,12 @@ export function setCanvasSizeWaffle(width, height) {
 export function drawButtonsWaffle(g, roles, width, bounds_width) {
 
     const button_width = 110
-    const button_height = 25
+    const button_height = 18
 
-    var X = 600
-    var Y = 0
+    var X = 440
+    var Y = -20
 
-    const maxY = 420
+    const maxY = 390
     var res
 
     function set_pos() {
@@ -106,7 +106,7 @@ export function drawButtonsWaffle(g, roles, width, bounds_width) {
             res = X + ',' + Y
             Y = Y + button_height
         } else {
-            Y = 0
+            Y = -20
             X = X + button_width
             res = X + ',' + Y
         }
@@ -154,7 +154,7 @@ export function drawButtonsWaffle(g, roles, width, bounds_width) {
  */
 export function draw(sorted_filmo_part, height, width, essential_function, tip) {
 
-    const cote_motif = 5
+    const cote_motif = 4
 
     const trunc_width = Math.trunc(width)
 
@@ -279,8 +279,8 @@ export function draw(sorted_filmo_part, height, width, essential_function, tip) 
 
         function setSizingWaffle() {
             boundsWaffle = d3.select('#viz1').node().getBoundingClientRect()
-            let graphWidth = Math.min(self.innerWidth, 1000);
-            let graphHeight = 600;
+            let graphWidth = 400;
+            let graphHeight = 550;
 
             svgSizeWaffle = {
                 width: graphWidth,

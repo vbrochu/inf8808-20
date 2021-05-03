@@ -66,7 +66,7 @@ export function appendAxes(g) {
  *
  * @param {*} g D3 Selection of g
  */
-export function appendGraphLabels(g) {
+export function appendGraphLabels(g, width, height) {
     g.append('text')
         .text('Roles')
         .attr('class', 'y axis-text')
@@ -101,12 +101,12 @@ export function setCanvasSizeHistogram(width, height) {
  */
 export function positionLabels(width, height) {
     d3.select('#viz5 .y.axis-text')
-        .attr('x', 100)
-        .attr('y', height / 2 - 220)
+        .attr('x', -30)
+        .attr('y', height / 2)
 
     d3.select('#viz5 .title')
         .attr('x', width / 2)
-        .attr('y', -35)
+        .attr('y', height+30)
 }
 
 
@@ -501,8 +501,8 @@ export function getContentsHistogram(c) {
          */
         function setSizingHistogram() {
             //boundsHistogram = d3.select('#viz5').node().getBoundingClientRect()
-            let graphWidth = Math.min(self.innerWidth, 1000);
-            let graphHeight = 600;
+            let graphWidth = 800;
+            let graphHeight = 500;
 
             svgSizeHistogram = {
                 //width: boundsHistogram.width,
@@ -547,7 +547,7 @@ export function getContentsHistogram(c) {
             setSizingHistogram()
 
             appendAxes(g)
-            appendGraphLabels(g)
+            appendGraphLabels(g, graphSizeHistogram.width, graphSizeHistogram.height)
             positionLabels(graphSizeHistogram.width, graphSizeHistogram.height)
 
             //on commence avec Denys Arcand

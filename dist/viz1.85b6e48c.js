@@ -2639,7 +2639,7 @@ function appendAxes(g) {
 
 function updateXScale(scale, width) {
   //ECHELLE FIXE
-  scale.domain([1985, 2019]).range([0, 570]);
+  scale.domain([1985, 2019]).range([0, 414]);
 }
 /**
  * Draws the X axis at the bottom of the diagram.
@@ -2699,10 +2699,10 @@ function setCanvasSizeWaffle(width, height) {
 
 function drawButtonsWaffle(g, roles, width, bounds_width) {
   var button_width = 110;
-  var button_height = 25;
-  var X = 600;
-  var Y = 0;
-  var maxY = 420;
+  var button_height = 18;
+  var X = 440;
+  var Y = -20;
+  var maxY = 390;
   var res;
 
   function set_pos() {
@@ -2710,7 +2710,7 @@ function drawButtonsWaffle(g, roles, width, bounds_width) {
       res = X + ',' + Y;
       Y = Y + button_height;
     } else {
-      Y = 0;
+      Y = -20;
       X = X + button_width;
       res = X + ',' + Y;
     }
@@ -2738,7 +2738,7 @@ function drawButtonsWaffle(g, roles, width, bounds_width) {
 
 
 function draw(sorted_filmo_part, height, width, essential_function, tip) {
-  var cote_motif = 5;
+  var cote_motif = 4;
   var trunc_width = Math.trunc(width);
 
   function setColor(e) {
@@ -2822,8 +2822,8 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
 
     function setSizingWaffle() {
       boundsWaffle = d3.select('#viz1').node().getBoundingClientRect();
-      var graphWidth = Math.min(self.innerWidth, 1000);
-      var graphHeight = 600;
+      var graphWidth = 400;
+      var graphHeight = 550;
       svgSizeWaffle = {
         width: graphWidth,
         height: graphHeight

@@ -1,8 +1,8 @@
 
 
 // set the dimensions and margins of the graph
-let graphWidth = Math.min(self.innerWidth, 1000);
-let graphHeight = graphWidth * 0.6;
+let graphWidth = 800;
+let graphHeight = 500;
 var margin = {top: 20, right: 60, bottom: 160, left: 60},
     width = graphWidth - margin.left - margin.right,
     height = graphHeight - margin.top - margin.bottom;

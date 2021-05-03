@@ -170,8 +170,8 @@ ORDER BY ?year ?roleLabel
      *   This function handles the graph's sizing.
      */
     function setSizing() {
-        let graphWidth = Math.min(self.innerWidth, 1000);
-        let graphHeight = graphWidth * 0.6;
+        let graphWidth = 800;
+        let graphHeight = 500;
 
         svgSize = {
             width: graphWidth,
