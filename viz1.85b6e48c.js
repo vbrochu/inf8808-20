@@ -2725,7 +2725,7 @@ function drawButtonsWaffle(g, roles, width, bounds_width) {
     }).on('mouseleave', function () {
       d3.select(this).attr('stroke', '#f4f6f4');
     });
-    button.append('text').attr('x', button_width / 2).attr('y', button_height / 2).attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').attr('class', 'button-text').text(role).attr('font-size', '10px').attr('fill', '#362023');
+    button.append('text').attr('x', button_width / 2).attr('y', Math.round(button_height / 2)).attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').attr('class', 'button-text').text(role).attr('font-size', '10px').attr('fill', '#362023');
   });
 }
 /**
@@ -2836,15 +2836,19 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
     }
 
     function setClickHandlerWaffle(role) {
-      d3.select('#button-waffle-' + role.toLowerCase().replaceAll(" ", "-").replaceAll("é", "e")).on('click', function () {
+      var roleID = role.toLowerCase().replaceAll(" ", "-").replaceAll("é", "e");
+      d3.select('#button-waffle-' + roleID).on('click', function () {
+        d3.selectAll('.button-waffle').classed("selected", false);
+        d3.select('#button-waffle-' + roleID).classed("selected", true);
         d3.selectAll('.waffle-rect').remove();
         draw(sorted_filmo_part, graphSizeWaffle.height, graphSizeWaffle.width, role, tipWaffle);
       });
     }
+
+    d3.select('#button-waffle-musique').on("click")();
     /**
      *   This function builds the graph.
      */
-
 
     function buildWaffle() {
       setSizingWaffle();
