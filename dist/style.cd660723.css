@@ -1,8 +1,8 @@
 body {
-    font-family: 'Arial', 'sans-serif';
+    font-family: 'Cambria', 'sans-serif';
     font-size: 16px;
-    background-color: #CAD5CA;
-    color: #362023;
+    background-color: #b5e6e3;
+    color: #232036;
     margin: 0;
     height: 100vh;
     display: flex;
@@ -28,38 +28,39 @@ main {
 }
 
 .viz-header {
-    width: 100%;
-    display: flex;
     justify-content: center;
     align-items: center;
+	font-size: 20px;
+    margin: 10px 0px 10px 0px;
+    padding: 0 20px 0 20px;
 }
 
 .viz-description {
-    width: 100%;
-    display: flex;
     justify-content: center;
-    align-items: center;
     margin: 10px 0px 10px 0px;
+    padding: 0 20px 0 20px;
     font-size: 20px;
 }
 
 svg {
     background-color: #ffffff;
+    border-radius: 40px 0 0 40px;
+    width: 1000px;
+    height: 600px;
 }
 
 .d3-tip {
     line-height: 1;
-    font-weight: bold;
+    font-weight: normal;
     padding: 12px;
-    background: rgba(54, 32, 35, 0.8);
+    background: #22224d;
     color: #fff;
     border-radius: 2px;
     pointer-events: none;
   }
 
 h1 {
-    font-family: 'Times', 'serif';
-    font-size: 56px;
+    font-size: 40px;
     margin: 0;
     font-weight: normal;
 }
@@ -93,6 +94,55 @@ h2 {
 
 .axis text {
     fill : #362023;
+}
+
+#search-input-viz5 {
+	width: 250px;
+}
+
+.suggestion {
+	width: 250px;
+	background-color: #3d3d85; /*#d4faf8;*/
+	color:white;
+	cursor: pointer;
+	border:solid;
+	border-width: 1px;
+	border-color: grey;
+}
+
+.suggestion:hover {
+  background-color: gold;
+}
+
+.info-box {
+    width: 500px;
+    background-color: white;
+    height: 600px;
+    border-radius: 0 40px 40px 0;
+    border-left: 2px solid #5e5e5e;
+}
+
+.container-search {
+    margin: 10px 0px 10px 0px;
+    padding: 0 20px 0 20px;
+}
+
+.toggle-button {
+    width: 30%;
+    height: 30px;
+    background-color: rgb(53, 97, 143);
+    border: 2px solid rgb(53, 97, 143);
+    cursor: pointer;
+    border-radius: 5px;
+    margin: auto;
+    text-align: center;
+    color: #ffffff;
+    font-size: 22px;
+}
+
+
+.toggle-button:hover {
+    background-color: rgb(93, 137, 183);
 }
 
 /*# sourceMappingURL=/style.cd660723.css.map */

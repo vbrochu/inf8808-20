@@ -1,11 +1,11 @@
 
 
 // set the dimensions and margins of the graph
-let graphWidth = Math.min(self.innerWidth, 1500);
+let graphWidth = Math.min(self.innerWidth, 1000);
 let graphHeight = graphWidth * 0.6;
 var margin = {top: 20, right: 60, bottom: 160, left: 60},
     width = graphWidth - margin.left - margin.right,
-    height = graphHeight * 0.6 - margin.top - margin.bottom;
+    height = graphHeight - margin.top - margin.bottom;
 
 // set the ranges
 var x = d3.scaleBand()

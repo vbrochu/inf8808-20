@@ -6,30 +6,28 @@ import d3Tip from 'd3-tip'
 import d3Legend from 'd3-svg-legend'
 
 const COLORS = [
-	'#fe0002',	//red
 	'#0100fe',	//blue
 	'#019a01',	//green
-	'#ff9a00',	//orange
-	'#ffff01',	//yellow
-	'#ffcdd0',	//pink
-	'#980086',	//purple
 	'#01ffff',	//cyan
+	'#980086',	//purple
+	'#94812b',	//kaki	
+	'#ffff01',	//yellow
+	'#fe0002',	//red
+	'#ffcdd0',	//pink
+	'#ff9a00',	//orange
 	'#ff804d',	//coral
 	'#018184',	//teal
 	'#582900',	//brown
 	'#000000',	//black
 	'##020085',	//navy
 	'#ff83f3',	//mauve
-	'#ffffff',	//white
 	'#d3d3d3',	//grey
-	'#94812b',	//kaki
 	'#cc5500',	//fire
+	'#d9d9d9',	//light grey
 	'#c09628',	//gold
-	'#293133'	//anhtracite
+	'#293133'	//anthracite
 ]
 
-const MIN_YEAR = 1900
-const MAX_YEAR = 2020
 
 
 
@@ -77,9 +75,9 @@ export function appendGraphLabels (g) {
     .attr('font-size', 12)
 
   g.append('text')
-    .text('Years')
+    .text('Années')
     .attr('class', 'title')
-    .attr('fill', '#898989')
+    .attr('fill', 'black')
 }
 
 /**
@@ -141,8 +139,35 @@ export function drawYAxis (yScale) {
  * @param {number} width Width of the graph
  */
 export function updateXScale (scale, data_career, width) {
-	//ECHELLE FIXE
-	scale.domain([MIN_YEAR, MAX_YEAR]).range([0,width]);
+	
+	var max_annee=0
+	var min_annee=9999
+	
+	data_career.forEach(c => {
+		let annee_sortie = c.film.anneeSortie
+		if (!(isNaN(annee_sortie))) {
+			if (annee_sortie < min_annee) {
+				min_annee = annee_sortie
+			}
+			if (annee_sortie > max_annee) {
+				max_annee = annee_sortie
+			}
+		}
+	});
+	
+	if (max_annee-min_annee < 10) {
+		
+		//si carrière peu étendue dans le temps on adapte l'échelle
+		scale.domain([min_annee-10, max_annee+10]).range([0,width]);
+		
+	} else {
+	
+		//on calcule la longueur du côté d'un rect
+		const x_length_rect = width/(max_annee-min_annee+2)
+		
+		scale.domain([min_annee-1, max_annee+1]).range([0,width+2*x_length_rect]);
+	
+	}
 }
 
 /**
@@ -175,7 +200,12 @@ export function updateYScale (scale, data_career, height) {
 	});
 	
 	if (found) {
-		scale.domain([0, max_roles]).range([height, 0]);
+		if (max_roles < 5) {
+			//si nombre de rôles sur une année faible on prend adapte l'échelle
+			scale.domain([0, 5]).range([height, 0]);
+		} else {
+			scale.domain([0, max_roles]).range([height, 0]);
+		}
 	} else {
 		scale.domain([0, data_career.length]).range([height, 0]);
 	}
@@ -220,8 +250,8 @@ export function drawHistogram (yScale, xScale, data_career, height, width, color
 	//et ajuster y en fonction
 	var dict_count = {}
 	
-	const y_length_rect = height/8
-	const x_length_rect = width/(MAX_YEAR-MIN_YEAR)
+	const y_length_rect = height/(yScale.domain()[1]-yScale.domain()[0])
+	const x_length_rect = width/(xScale.domain()[1]-xScale.domain()[0])
 		
 	
 	function setY(c) {
@@ -246,7 +276,7 @@ export function drawHistogram (yScale, xScale, data_career, height, width, color
 		if (isNaN(annee_film)) {
 			return xScale(1950)
 		} else {
-			return xScale(annee_film)
+			return xScale(annee_film)-x_length_rect/2
 		}
 	}
 	
@@ -257,6 +287,24 @@ export function drawHistogram (yScale, xScale, data_career, height, width, color
 		} else {
 			return 1
 		}
+	}
+	
+	function handleMouseOver(c, d) {
+		tip.show(c, d);
+		d3.select(d)
+		.attr('width', x_length_rect+2)
+		.attr('height', y_length_rect+2)
+		.attr("stroke", "black")
+		.attr("stroke-width", 2);
+	}
+	
+	function handleMouseOut(c, d) {
+		tip.hide();
+		d3.select(d)
+		.attr('width', x_length_rect)
+		.attr('height', y_length_rect)
+		.attr("stroke", "white")
+		.attr("stroke-width", 1);
 	}
 	
 	d3.select('#histogram-g')
@@ -273,9 +321,14 @@ export function drawHistogram (yScale, xScale, data_career, height, width, color
 		.attr('fill', c => colorScale(c.fonctionCategory))
 		.attr("stroke", "white")
 		.attr("stroke-width", 1)
-		.on("mouseover", tip.show)
-		.on("mouseout", tip.hide)
+		.on("mouseover", function(c) { 
+			handleMouseOver(c, this)
+		})
+		.on("mouseout", function(c) { 
+			handleMouseOut(c, this)
+		})
 		.style("opacity", setOpacity);
+		
 }
 
 
@@ -344,9 +397,6 @@ export function getContentsHistogram (c) {
 
 	//associe un nom à sa carrière (roles et films)
 	let dict_noms_car
-	
-	//liste [film id, anneeSortie, participants] triée par années de sortie
-	let sorted_filmo_part
 
 
 Promise.all([
@@ -361,11 +411,83 @@ Promise.all([
 	dict_fonctionId = preprocess.buildDictFonctions(fichiers[1]);
 	dict_filmoId = preprocess.buildDictFilmoId(fichiers[2]);
 	
+	
+	
 	let aux=preprocess.buildDictCareer(fichiers[3], dict_filmoId, dict_fonctionId, dict_nomsId);
 	dict_noms_car=aux[0]
-	sorted_filmo_part=aux[1]
+		
+	const g = generateGHistogram(margin_histogram)
+	
 	buildHistogram()
+	
+	
+	//barre de recherche
 
+	const barre_recherche_input = document.getElementById("search-input-viz5");
+	
+	//construction dun dico associant nom à son id pour reconstruire le graphe
+	let dict_noms={}
+	Object.keys(dict_nomsId).forEach(function(key) {
+		dict_noms[dict_nomsId[key].prenom+' '+dict_nomsId[key].nom]=key
+	})
+	
+	
+	barre_recherche_input.addEventListener('keyup', function() {
+		
+		var suggestions=''
+		
+		const input = barre_recherche_input.value
+		
+		if (input != '') {
+			var liste_prenom_nom = []
+			
+			var keys = Object.keys(dict_nomsId);
+			
+			
+			keys.forEach(function(key){
+				const prenom_nom = dict_nomsId[key].prenom+" "+dict_nomsId[key].nom
+				liste_prenom_nom.push(prenom_nom);
+			});
+			
+			let guesses = liste_prenom_nom.filter(pn => pn.toLowerCase().includes(input.toLowerCase()))
+
+			
+			guesses.slice(0,5).forEach(function(guess) {
+				suggestions+=`
+					<div class='suggestion'>`+guess+`</div>
+					`
+			})
+			
+			document.getElementById('search-suggestions-viz5').innerHTML = suggestions;
+			
+			
+			
+			let coll_sugg = document.getElementsByClassName('suggestion')
+			
+			for (let e of coll_sugg) {
+				e.addEventListener("click", function() {
+					d3.selectAll('.role-rect').remove()
+					
+					
+					if (dict_noms_car[dict_noms[e.textContent]] != undefined) {
+					
+						adaptHistogram(dict_noms[e.textContent])
+						document.getElementById('viz5-description').textContent='Carrière de '+e.textContent
+						d3.selectAll('.suggestion').remove()
+					} else {
+						document.getElementById('viz5-description').textContent=e.textContent+" n'a participé à aucun film de la BDD"
+					}
+				})
+			}
+			
+			
+		} else {
+			
+			//on supprime les suggestions si la barre de recherche est vide
+			document.getElementById('search-suggestions-viz5').innerHTML = '';
+		}
+	})
+	
 	
 
     /**
@@ -373,8 +495,8 @@ Promise.all([
      */
     function setSizingHistogram () {
       //boundsHistogram = d3.select('#viz5').node().getBoundingClientRect()
-	  let graphWidth = Math.min(self.innerWidth, 1500);
-	  let graphHeight = 350;
+	  let graphWidth = Math.min(self.innerWidth, 1000);
+	  let graphHeight = 600;
 
       svgSizeHistogram = {
         //width: boundsHistogram.width,
@@ -389,6 +511,26 @@ Promise.all([
 
       setCanvasSizeHistogram(svgSizeHistogram.width, svgSizeHistogram.height)
     }
+	
+	
+	/**
+     *   This function adapts the histogram to the ID_NOM
+     */
+	function adaptHistogram(ID_NOM) {
+		updateXScale(xScale, dict_noms_car[ID_NOM], graphSizeHistogram.width)
+		updateYScale(yScale, dict_noms_car[ID_NOM], graphSizeHistogram.height)
+
+		colorScale=setColorScale(dict_noms_car[ID_NOM], dict_fonctionId)
+
+		drawXAxis(xScale, graphSizeHistogram.height)
+		drawYAxis(yScale)
+
+		drawHistogram(yScale, xScale, dict_noms_car[ID_NOM], graphSizeHistogram.height, graphSizeHistogram.width, colorScale, tipHistogram, dict_filmoId)
+
+		//setRectHoverHandler(tipHistogram)
+
+		drawLegendHistogram(g, colorScale, graphSizeHistogram.width)		
+	}
 
 
 
@@ -397,26 +539,15 @@ Promise.all([
      */
     function buildHistogram () {
 		setSizingHistogram()
-		
-		const g = generateGHistogram(margin_histogram)
-
+	
 		appendAxes(g)
 		appendGraphLabels(g)
 		positionLabels(graphSizeHistogram.width, graphSizeHistogram.height)
 
-		let NOM_TEST=15334
+		//on commence avec Denys Arcand
+		adaptHistogram(15334)
+		
 
-		updateXScale(xScale, dict_noms_car[NOM_TEST], graphSizeHistogram.width)
-		updateYScale(yScale, dict_noms_car[NOM_TEST], graphSizeHistogram.height)
-
-		colorScale=setColorScale(dict_noms_car[NOM_TEST], dict_fonctionId)
-
-		drawXAxis(xScale, graphSizeHistogram.height)
-		drawYAxis(yScale)
-
-		drawHistogram(yScale, xScale, dict_noms_car[NOM_TEST], graphSizeHistogram.height, graphSizeHistogram.width, colorScale, tipHistogram, dict_filmoId)
-
-		drawLegendHistogram(g, colorScale, graphSizeHistogram.width)
     }
 	
 	

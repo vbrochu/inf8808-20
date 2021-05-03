@@ -38,9 +38,9 @@ ORDER BY ?year ?roleLabel
 
 (function (d3) {
   let margin = {
-    top: 75,
-    right: 200,
-    bottom: 100,
+    top: 50,
+    right: 80,
+    bottom: 50,
     left: 80
   }
 
@@ -48,96 +48,120 @@ ORDER BY ?year ?roleLabel
 
   setSizing()
 
-  let g = generateG(margin)
 
-  appendAxes(g)
-  appendGraphLabels(g)
-
-  positionLabels(g, graphSize.width, graphSize.height)
 
   let data = [];
   let roleGroups = groups.groups;
   let roleColors = groups.colors
 
-  d3.csv('./data3.csv').then((roles) => {
-    let groupOrder = getSortedGroups(roles, roleGroups);
-    data = preprocess(roles, roleGroups, true);
-    
-    let xScale = setXScale(graphSize.width, data);
-    let yScale = setYScale(graphSize.height, data, roleGroups);
-    let colorScale = setColorScale(roleGroups, roleColors);
+  function loadViz3(scaleProperty) {
+    d3.csv('./data3.csv').then((roles) => {
+        let g = generateG(margin)
 
-    let sortedKeys = sortKeys(roleGroups, groupOrder);
+        appendAxes(g)
+        appendGraphLabels(g)
+      
+        positionLabels(g, graphSize.width, graphSize.height)
 
-    var stackedData = d3.stack()
-        .offset(d3.stackOffsetSilhouette)
-        .keys(sortedKeys)
-        .value((d,key) => d[key].count)
-        (data);
-
-    drawXAxis(xScale, graphSize.height)
-    drawYAxis(yScale)
-
-    let area = d3.area()
-    .x(function(d, i) { return xScale(d.data.year); })
-    .y0(function(d) { return yScale(d[0]); })
-    .y1(function(d) { return yScale(d[1]); });
-
-    var Tooltip = g
-        .append("text")
-        .attr("x", 0)
-        .attr("y", 0)
-        .style("opacity", 0)
-        .style("font-size", 30)
-
-    var mouseover = function(d) {
-        Tooltip.style("opacity", 1)
-        d3.selectAll("#viz3 .myArea").style("opacity", .2)
-            .style('stroke-width', '1px');
-        d3.selectAll("#viz3 .myArea")
-            .filter(a => roleGroups[a.key] == roleGroups[d.key])
-            .style("stroke", "black")
-            .style("opacity", 0.6);
-        d3.select(this)
-            .style("stroke", "black")
-            .style("opacity", 1)
-            .style('stroke-width', '2px');
-    }
-    var mousemove = function(d,i) {
-        //console.log( d3.event )
-        let text = "";
-        if (roleGroups[d.key] != groups.roles[d.key]) {
-            text = roleGroups[d.key] + ": " + groups.roles[d.key];
-        } else {
-            text = roleGroups[d.key];
-        }
+        let groupOrder = getSortedGroups(roles, roleGroups);
+        data = preprocess(roles, roleGroups, true);
         
-        Tooltip.text(text)
-    }
-    var mouseleave = function(d) {
-        Tooltip.style("opacity", 0)
-        d3.selectAll("#viz3 .myArea").style("opacity", 1).style("stroke", "none")
-    }
+        let xScale = setXScale(graphSize.width, data);
+        let yScale = setYScale(graphSize.height, data, roleGroups,scaleProperty);
+        let colorScale = setColorScale(roleGroups, roleColors);
+    
+        let sortedKeys = sortKeys(roleGroups, groupOrder);
+    
+        var stackedData = d3.stack()
+            .offset(d3.stackOffsetSilhouette)
+            .keys(sortedKeys)
+            .value((d,key) => d[key][scaleProperty])
+            (data);
+    
+        drawXAxis(xScale, graphSize.height)
+        drawYAxis(yScale)
+    
+        let area = d3.area()
+        .x(function(d, i) { return xScale(d.data.year); })
+        .y0(function(d) { return yScale(d[0]); })
+        .y1(function(d) { return yScale(d[1]); });
+    
+        var Tooltip = g
+            .append("text")
+            .attr("x", 0)
+            .attr("y", 0)
+            .style("opacity", 0)
+            .style("font-size", 30)
+    
+        var mouseover = function(d) {
+            Tooltip.style("opacity", 1)
+            d3.selectAll("#viz3 .myArea").style("opacity", .2)
+                .style('stroke-width', '1px');
+            d3.selectAll("#viz3 .myArea")
+                .filter(a => roleGroups[a.key] == roleGroups[d.key])
+                .style("stroke", "black")
+                .style("opacity", 0.6);
+            d3.select(this)
+                .style("stroke", "black")
+                .style("opacity", 1)
+                .style('stroke-width', '2px');
+        }
+        var mousemove = function(d,i) {
+            //console.log( d3.event )
+            let text = "";
+            if (roleGroups[d.key] != groups.roles[d.key]) {
+                text = roleGroups[d.key] + ": " + groups.roles[d.key];
+            } else {
+                text = roleGroups[d.key];
+            }
+            
+            Tooltip.text(text)
+        }
+        var mouseleave = function(d) {
+            Tooltip.style("opacity", 0)
+            d3.selectAll("#viz3 .myArea").style("opacity", 1).style("stroke", "none")
+        }
+    
+        g
+        .selectAll("mylayers")
+        .data(stackedData)
+        .enter()
+        .append("path")
+          .attr("class", "myArea")
+          .style("fill", function(d) { return colorScale(d.key); })
+          .attr("d",area)
+          .on("mouseover", mouseover)
+          .on("mousemove", mousemove)
+          .on("mouseleave", mouseleave);
+      })
+  }
 
-    g
-    .selectAll("mylayers")
-    .data(stackedData)
-    .enter()
-    .append("path")
-      .attr("class", "myArea")
-      .style("fill", function(d) { return colorScale(d.key); })
-      .attr("d",area)
-      .on("mouseover", mouseover)
-      .on("mousemove", mousemove)
-      .on("mouseleave", mouseleave);
-  })
+  loadViz3("count")
 
+  document.getElementById("viz3-button").addEventListener("click", toggleProperty);
+
+  function toggleProperty() {
+    let button = document.getElementById("viz3-button");
+    let property = button.getAttribute("value")
+
+    d3.select("#viz3").selectAll("*").remove();
+
+    if (property == "count"){
+        button.setAttribute("value", "proportion")
+        loadViz3("proportion");
+        button.innerHTML = "Total"
+    } else {
+        button.setAttribute("value", "count")
+        loadViz3("count");
+        button.innerHTML = "Proportion"
+    }
+  }
   
   /**
    *   This function handles the graph's sizing.
    */
    function setSizing () {
-    let graphWidth = Math.min(self.innerWidth, 1500);
+    let graphWidth = Math.min(self.innerWidth, 1000);
     let graphHeight = graphWidth * 0.6;
 
     svgSize = {
@@ -199,15 +223,15 @@ ORDER BY ?year ?roleLabel
 			.range([0, width]);
 }
 
-function setYScale (height, data, roleGroups) {
+function setYScale (height, data, roleGroups, scaleProperty) {
 	// TODO : Define the linear scale in y for the scatter plot
 	let range = 0;
 
     data.forEach(d => {
         let rolesSum = 0;
         Object.keys(roleGroups).forEach(key => {
-            if (d[key].count){
-                rolesSum += d[key].count;
+            if (d[key][scaleProperty]){
+                rolesSum += d[key][scaleProperty];
             }
         })
         if (rolesSum > range){

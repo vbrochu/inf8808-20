@@ -92,7 +92,7 @@ export function setCanvasSizeWaffle (width, height) {
  */
 export function drawButtonsWaffle (g, roles, width, bounds_width) {
 	
-	const button_width = 130
+	const button_width = 110
 	const button_height = 25
 	
 	var X = 600
@@ -118,12 +118,12 @@ export function drawButtonsWaffle (g, roles, width, bounds_width) {
 			.attr('class', 'button-waffle')
 			.attr('id', 'button-waffle-'+role.toLowerCase().replaceAll(" ", "-").replaceAll("é","e"))
 			.attr('transform', 'translate('+set_pos()+')')
-			.attr('width', 130)
-			.attr('height', 25)
+			.attr('width', button_width)
+			.attr('height', button_height)
 
 		button.append('rect')
-			.attr('width', 130)
-			.attr('height', 30)
+			.attr('width', button_width)
+			.attr('height', button_height)
 			.attr('fill', '#f4f6f4')
 			.on('mouseenter', function () {
 			  d3.select(this).attr('stroke', '#362023')
@@ -133,8 +133,8 @@ export function drawButtonsWaffle (g, roles, width, bounds_width) {
 			})
 
 		button.append('text')
-			.attr('x', 65)
-			.attr('y', 15)
+			.attr('x', button_width/2)
+			.attr('y', button_height/2)
 			.attr('text-anchor', 'middle')
 			.attr('dominant-baseline', 'middle')
 			.attr('class', 'button-text')
@@ -182,6 +182,22 @@ export function draw (sorted_filmo_part, height, width, essential_function, tip)
 	function setY(e, i) {
 		return (i*cote_motif)%height
 	}
+	
+	function handleMouseOver(c, d) {
+		tip.show(c, d);
+		d3.select(d)
+		.attr('width', cote_motif+1)
+		.attr('height', cote_motif+1)
+		.attr("stroke", "black");
+	}
+	
+	function handleMouseOut(c, d) {
+		tip.hide();
+		d3.select(d)
+		.attr('width', cote_motif)
+		.attr('height', cote_motif)
+		.attr("stroke", "white");
+	}
 
 	d3.select('#waffle-g')
 		.selectAll('rect')
@@ -197,7 +213,12 @@ export function draw (sorted_filmo_part, height, width, essential_function, tip)
 		.attr('fill', setColor)
 		.attr("stroke", "white")
 		.attr("stroke-width", 1)
-		.on("click", tip.show);
+		.on("mouseover", function(c) { 
+			handleMouseOver(c, this)
+		})
+		.on("mouseout", function(c) { 
+			handleMouseOut(c, this)
+		});
 
 }
 
@@ -205,7 +226,7 @@ export function draw (sorted_filmo_part, height, width, essential_function, tip)
 
 
 (function (d3) {
-	const margin_waffle = { top: 80, right: 0, bottom: 80, left: 55 }
+	const margin_waffle = { top: 80, right: 0, bottom: 80, left: 50 }
 
 	let boundsWaffle
 	let svgSizeWaffle
@@ -226,9 +247,6 @@ export function draw (sorted_filmo_part, height, width, essential_function, tip)
 	
 	//associe un id de film ses titre et année de sortie
 	let dict_filmoId
-
-	//associe un nom à sa carrière (roles et films)
-	let dict_noms_car
 	
 	//liste [film id, anneeSortie, participants] triée par années de sortie
 	let sorted_filmo_part
@@ -248,14 +266,13 @@ Promise.all([
 	dict_filmoId = preprocess.buildDictFilmoId(fichiers[2]);
 	
 	let aux=preprocess.buildDictCareer(fichiers[3], dict_filmoId, dict_fonctionId, dict_nomsId);
-	dict_noms_car=aux[0]
 	sorted_filmo_part=aux[1]
 	
 	buildWaffle()
 	
 	function setSizingWaffle () {
 		boundsWaffle = d3.select('#viz1').node().getBoundingClientRect()
-		let graphWidth = Math.min(self.innerWidth, 1500);
+		let graphWidth = Math.min(self.innerWidth, 1000);
     	let graphHeight = 600;
 
 		svgSizeWaffle = {
