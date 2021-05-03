@@ -40,6 +40,7 @@ main {
     margin: 10px 0px 10px 0px;
     padding: 0 20px 0 20px;
     font-size: 20px;
+    text-align: justify;
 }
 
 svg {
@@ -143,6 +144,11 @@ h2 {
 
 .toggle-button:hover {
     background-color: rgb(93, 137, 183);
+}
+
+.button-waffle.selected rect {
+    stroke-width:2;
+    stroke:rgb(56, 176, 222);
 }
 
 /*# sourceMappingURL=/style.cd660723.css.map */

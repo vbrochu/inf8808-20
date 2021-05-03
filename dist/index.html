@@ -19,21 +19,26 @@
 			</h2>
 		</header>
 		<main>
-			<div class="viz" id="viz1">
-				<svg class="waffle-svg"></svg>
-				<div class="info-box">
-					<div class="viz-header">
-						<h3>Les rôles essentiels dans la production cinématographique</h3>
-					</div>
-					<div class="viz-description">Le carré d'un film est bleu s'il implique le rôle choisi, cliquez dessus pour avoir des détails</div>
-				</div>
-			</div>
 			<div class="viz graph-viz2">
 				<svg id="viz2"></svg>
 				<div class="info-box">
 					<div class="viz-header">
 						<h3>Proportion de chacun des rôles dans les productions cinématographiques</h3>
+            <div class="viz-description">
+              L'analyse des gens crédités dans les oeuvres de la cinémathèque Québécoise révèle que les rôles présents le plus souvent sont sans surprise les acteurs. Les autres rôles importants les plus représenté sont les rôles en lien avec l'image, le son, la production et le scénario. Les organismes participant à la création des oeuvres sont également bien représentés. De l'autre côté, certains rôles ont été crédité dans un nombre très faible d'oeuvres. Par exemple, "Chef électricien" apparaît seulement 70 fois.
+            </div>
 					</div>
+				</div>
+			</div>
+      <div class="viz" id="viz1">
+				<svg class="waffle-svg"></svg>
+				<div class="info-box">
+					<div class="viz-header">
+						<h3>Les rôles essentiels dans la production cinématographique</h3>
+					</div>
+					<div class="viz-description">
+            Dans cette visualisation, chaque carré représente une oeuvre publiée entre 1985 et 2019. Les carrés en bleu sont ceux ou le rôle sélectionné et présent dans le générique. On voit ici que la musique est un rôle présent très fréquemment et l'interprétation est également présente dans la majorité des oeuvres. D'autre part, le rôle de diffuseur web n'est apparu que très récemment en 2017.
+          </div>
 				</div>
 			</div>
 			<div class="viz graph-viz3">
@@ -42,7 +47,9 @@
 					<div class="viz-header">
 						<h3>Nombre de personnes créditées dans chaque rôle au fil du temps</h3>
 					</div>
-					<div class="viz-description">L'épaisseur représente le nombre de fois que le rôle à été crédité dans un film</div>
+					<div class="viz-description">
+            On peut voir ici l'évolution des rôles à travers le temps des années 1880 jusqu`à aujourd'hui. Les années 1970 correspondent à la période où le plus grand nombre de rôles ont été crédité et on remarque une résurgence autour de 2005. En mode proportionnel (bouton en bleu plus bas), on peut aussi voir que les activités reliées à la réalisation et l'interprétation représentent autour de 50% des rôles peu importe la période. On remarque également que les rôles liés à la musique et au son ont subi une forte croissance autour des années 1920.
+          </div>
           <div id="viz3-button" class="toggle-button" value="count">Proportion</div>
 				</div>
 			</div>
@@ -52,11 +59,16 @@
 					<div class="viz-header">
 						<h3>Représentation de carrière</h3>
 					</div>
-					<div class="viz-description" id="viz5-description">Carrière de Denys Arcand</div>
+					<div class="viz-description" id="viz5-description">
+            Certaines personnes ont eu une carrière plus diverse que d'autres. Denys Arcand en est un bon exemple. Au tout début de sa carrière dans les années 1960, ces principaux rôles dont le scénario, la narration, l'image et l'interprétation. Plus tard, l'interprétation et le scénario deviennent ses principales activités et en 2007, il participe à la musique dans l'oeuvre "Âge des ténèbres".
+          </div>
+          <div class="viz-description" id="viz5-description">
+            Entrez ici le nom d'une personne pour avoir un apperçu de sa carrière:
+          </div>
 					<div class="container-search">
-						<div id="search-suggestions-viz5">
-							<input class="input" id="search-input-viz5" type="text" placeholder="Recherche d'un nom...">
-						</div>
+            
+						<input class="input" id="search-input-viz5" type="text" placeholder="Recherche d'un nom...">
+						<div id="search-suggestions-viz5"></div>
 					</div>
 				</div>
 			</div>

@@ -351,7 +351,7 @@ ORDER BY ?year ?roleLabel
       }).y1(function (d) {
         return yScale(d[1]);
       });
-      var Tooltip = g.append("text").attr("x", 0).attr("y", 0).style("opacity", 0).style("font-size", 30);
+      var Tooltip = g.append("text").attr("x", 0).attr("y", -5).style("opacity", 0).style("font-size", 30).style("margin", "10px");
 
       var mouseover = function mouseover(d) {
         Tooltip.style("opacity", 1);
@@ -380,7 +380,7 @@ ORDER BY ?year ?roleLabel
         d3.selectAll("#viz3 .myArea").style("opacity", 1).style("stroke", "none");
       };
 
-      g.selectAll("mylayers").data(stackedData).enter().append("path").attr("class", "myArea").style("fill", function (d) {
+      g.selectAll("layers").data(stackedData).enter().append("path").attr('transform', 'translate( 0, ' + -graphSize.height / 2 + ')').attr("class", "myArea").style("fill", function (d) {
         return colorScale(d.key);
       }).attr("d", area).on("mouseover", mouseover).on("mousemove", mousemove).on("mouseleave", mouseleave);
     });
@@ -425,7 +425,6 @@ ORDER BY ?year ?roleLabel
 })(d3);
 
 function preprocess(roles, groups) {
-  var normalize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
   var data = [];
   var emptyGroups = {};
   Object.keys(groups).forEach(function (key) {
@@ -455,22 +454,18 @@ function preprocess(roles, groups) {
       })[roleId] = parseInt(element.count);
     }
   });
-
-  if (normalize) {
-    data.forEach(function (d) {
-      var yearSum = 0;
-      Object.keys(groups).forEach(function (g) {
-        yearSum += d[g];
-      });
-      Object.keys(groups).forEach(function (g) {
-        d[g] = {
-          'count': d[g],
-          'proportion': d[g] / yearSum
-        };
-      });
+  data.forEach(function (d) {
+    var yearSum = 0;
+    Object.keys(groups).forEach(function (g) {
+      yearSum += d[g];
     });
-  }
-
+    Object.keys(groups).forEach(function (g) {
+      d[g] = {
+        'count': d[g],
+        'proportion': d[g] / yearSum
+      };
+    });
+  });
   return data;
 }
 
@@ -481,7 +476,6 @@ function setXScale(width, data) {
 }
 
 function setYScale(height, data, roleGroups, scaleProperty) {
-  // TODO : Define the linear scale in y for the scatter plot
   var range = 0;
   data.forEach(function (d) {
     var rolesSum = 0;
@@ -495,7 +489,7 @@ function setYScale(height, data, roleGroups, scaleProperty) {
       range = rolesSum;
     }
   });
-  return d3.scaleLinear().domain([-1 * range / 2, range / 2]).range([height, 0]);
+  return d3.scaleLinear().domain([0, range]).range([height, 0]);
 }
 
 function setColorScale(roleGroups, groupsColors) {
@@ -573,6 +567,7 @@ function sortKeys(roles, order) {
 
 function appendAxes(g) {
   g.append('g').attr('class', 'x axis');
+  g.append('g').attr('class', 'y axis');
 }
 
 function appendGraphLabels(g) {

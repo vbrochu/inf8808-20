@@ -12048,7 +12048,7 @@ function updateYScale(scale, data_career, height) {
 /**
  * @param {object[]} data_career Career of the seleted person
  * @returns {*} The ordinal scale used to determine the color of rects
-  * @param {object} dict_fonctionId The dictionary fonctionId - fonction (terme)
+ * @param {object} dict_fonctionId The dictionary fonctionId - fonction (terme)
  */
 
 
@@ -12280,8 +12280,8 @@ function getContentsHistogram(c) {
       setCanvasSizeHistogram(svgSizeHistogram.width, svgSizeHistogram.height);
     }
     /**
-        *   This function adapts the histogram to the ID_NOM
-        */
+     *   This function adapts the histogram to the ID_NOM
+     */
 
 
     function adaptHistogram(ID_NOM) {
