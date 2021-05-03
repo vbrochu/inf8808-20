@@ -119,8 +119,8 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   return newRequire;
 })({"src/viz2.js":[function(require,module,exports) {
 // set the dimensions and margins of the graph
-var graphWidth = Math.min(self.innerWidth, 1000);
-var graphHeight = graphWidth * 0.6;
+var graphWidth = 800;
+var graphHeight = 500;
 var margin = {
   top: 20,
   right: 60,

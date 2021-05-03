@@ -410,8 +410,8 @@ ORDER BY ?year ?roleLabel
 
 
   function setSizing() {
-    var graphWidth = Math.min(self.innerWidth, 1000);
-    var graphHeight = graphWidth * 0.6;
+    var graphWidth = 800;
+    var graphHeight = 500;
     svgSize = {
       width: graphWidth,
       height: graphHeight

@@ -11919,7 +11919,7 @@ function appendAxes(g) {
  */
 
 
-function appendGraphLabels(g) {
+function appendGraphLabels(g, width, height) {
   g.append('text').text('Roles').attr('class', 'y axis-text').attr('transform', 'rotate(-90)').attr('fill', '#898989').attr('font-size', 12);
   g.append('text').text('Années').attr('class', 'title').attr('fill', 'black');
 }
@@ -11943,8 +11943,8 @@ function setCanvasSizeHistogram(width, height) {
 
 
 function positionLabels(width, height) {
-  d3.select('#viz5 .y.axis-text').attr('x', 100).attr('y', height / 2 - 220);
-  d3.select('#viz5 .title').attr('x', width / 2).attr('y', -35);
+  d3.select('#viz5 .y.axis-text').attr('x', -30).attr('y', height / 2);
+  d3.select('#viz5 .title').attr('x', width / 2).attr('y', height + 30);
 }
 /**
  * Draws the x axis at the bottom of the plot.
@@ -12266,8 +12266,8 @@ function getContentsHistogram(c) {
 
     function setSizingHistogram() {
       //boundsHistogram = d3.select('#viz5').node().getBoundingClientRect()
-      var graphWidth = Math.min(self.innerWidth, 1000);
-      var graphHeight = 600;
+      var graphWidth = 800;
+      var graphHeight = 500;
       svgSizeHistogram = {
         //width: boundsHistogram.width,
         width: graphWidth,
@@ -12302,7 +12302,7 @@ function getContentsHistogram(c) {
     function buildHistogram() {
       setSizingHistogram();
       appendAxes(g);
-      appendGraphLabels(g);
+      appendGraphLabels(g, graphSizeHistogram.width, graphSizeHistogram.height);
       positionLabels(graphSizeHistogram.width, graphSizeHistogram.height); //on commence avec Denys Arcand
 
       adaptHistogram(15334);
