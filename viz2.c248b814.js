@@ -119,7 +119,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   return newRequire;
 })({"src/viz2.js":[function(require,module,exports) {
 // set the dimensions and margins of the graph
-var graphWidth = Math.min(self.innerWidth, 1500);
+var graphWidth = Math.min(self.innerWidth, 1000);
 var graphHeight = graphWidth * 0.6;
 var margin = {
   top: 20,
@@ -128,7 +128,7 @@ var margin = {
   left: 60
 },
     width = graphWidth - margin.left - margin.right,
-    height = graphHeight * 0.6 - margin.top - margin.bottom; // set the ranges
+    height = graphHeight - margin.top - margin.bottom; // set the ranges
 
 var x = d3.scaleBand().range([0, width]).padding(0.1);
 var y = d3.scaleLinear().range([height, 0]); // append the svg object to the body of the page
@@ -190,7 +190,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63462" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62014" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

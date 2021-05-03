@@ -316,78 +316,101 @@ ORDER BY ?year ?roleLabel
 */
 (function (d3) {
   var margin = {
-    top: 75,
-    right: 200,
-    bottom: 100,
+    top: 50,
+    right: 80,
+    bottom: 50,
     left: 80
   };
   var svgSize, graphSize;
   setSizing();
-  var g = generateG(margin);
-  appendAxes(g);
-  appendGraphLabels(g);
-  positionLabels(g, graphSize.width, graphSize.height);
   var data = [];
   var roleGroups = groups.groups;
   var roleColors = groups.colors;
-  d3.csv('./data3.csv').then(function (roles) {
-    var groupOrder = getSortedGroups(roles, roleGroups);
-    data = preprocess(roles, roleGroups, true);
-    var xScale = setXScale(graphSize.width, data);
-    var yScale = setYScale(graphSize.height, data, roleGroups);
-    var colorScale = setColorScale(roleGroups, roleColors);
-    var sortedKeys = sortKeys(roleGroups, groupOrder);
-    var stackedData = d3.stack().offset(d3.stackOffsetSilhouette).keys(sortedKeys).value(function (d, key) {
-      return d[key].count;
-    })(data);
-    drawXAxis(xScale, graphSize.height);
-    drawYAxis(yScale);
-    var area = d3.area().x(function (d, i) {
-      return xScale(d.data.year);
-    }).y0(function (d) {
-      return yScale(d[0]);
-    }).y1(function (d) {
-      return yScale(d[1]);
+
+  function loadViz3(scaleProperty) {
+    d3.csv('./data3.csv').then(function (roles) {
+      var g = generateG(margin);
+      appendAxes(g);
+      appendGraphLabels(g);
+      positionLabels(g, graphSize.width, graphSize.height);
+      var groupOrder = getSortedGroups(roles, roleGroups);
+      data = preprocess(roles, roleGroups, true);
+      var xScale = setXScale(graphSize.width, data);
+      var yScale = setYScale(graphSize.height, data, roleGroups, scaleProperty);
+      var colorScale = setColorScale(roleGroups, roleColors);
+      var sortedKeys = sortKeys(roleGroups, groupOrder);
+      var stackedData = d3.stack().offset(d3.stackOffsetSilhouette).keys(sortedKeys).value(function (d, key) {
+        return d[key][scaleProperty];
+      })(data);
+      drawXAxis(xScale, graphSize.height);
+      drawYAxis(yScale);
+      var area = d3.area().x(function (d, i) {
+        return xScale(d.data.year);
+      }).y0(function (d) {
+        return yScale(d[0]);
+      }).y1(function (d) {
+        return yScale(d[1]);
+      });
+      var Tooltip = g.append("text").attr("x", 0).attr("y", 0).style("opacity", 0).style("font-size", 30);
+
+      var mouseover = function mouseover(d) {
+        Tooltip.style("opacity", 1);
+        d3.selectAll("#viz3 .myArea").style("opacity", .2).style('stroke-width', '1px');
+        d3.selectAll("#viz3 .myArea").filter(function (a) {
+          return roleGroups[a.key] == roleGroups[d.key];
+        }).style("stroke", "black").style("opacity", 0.6);
+        d3.select(this).style("stroke", "black").style("opacity", 1).style('stroke-width', '2px');
+      };
+
+      var mousemove = function mousemove(d, i) {
+        //console.log( d3.event )
+        var text = "";
+
+        if (roleGroups[d.key] != groups.roles[d.key]) {
+          text = roleGroups[d.key] + ": " + groups.roles[d.key];
+        } else {
+          text = roleGroups[d.key];
+        }
+
+        Tooltip.text(text);
+      };
+
+      var mouseleave = function mouseleave(d) {
+        Tooltip.style("opacity", 0);
+        d3.selectAll("#viz3 .myArea").style("opacity", 1).style("stroke", "none");
+      };
+
+      g.selectAll("mylayers").data(stackedData).enter().append("path").attr("class", "myArea").style("fill", function (d) {
+        return colorScale(d.key);
+      }).attr("d", area).on("mouseover", mouseover).on("mousemove", mousemove).on("mouseleave", mouseleave);
     });
-    var Tooltip = g.append("text").attr("x", 0).attr("y", 0).style("opacity", 0).style("font-size", 30);
+  }
 
-    var mouseover = function mouseover(d) {
-      Tooltip.style("opacity", 1);
-      d3.selectAll("#viz3 .myArea").style("opacity", .2).style('stroke-width', '1px');
-      d3.selectAll("#viz3 .myArea").filter(function (a) {
-        return roleGroups[a.key] == roleGroups[d.key];
-      }).style("stroke", "black").style("opacity", 0.6);
-      d3.select(this).style("stroke", "black").style("opacity", 1).style('stroke-width', '2px');
-    };
+  loadViz3("count");
+  document.getElementById("viz3-button").addEventListener("click", toggleProperty);
 
-    var mousemove = function mousemove(d, i) {
-      //console.log( d3.event )
-      var text = "";
+  function toggleProperty() {
+    var button = document.getElementById("viz3-button");
+    var property = button.getAttribute("value");
+    d3.select("#viz3").selectAll("*").remove();
 
-      if (roleGroups[d.key] != groups.roles[d.key]) {
-        text = roleGroups[d.key] + ": " + groups.roles[d.key];
-      } else {
-        text = roleGroups[d.key];
-      }
-
-      Tooltip.text(text);
-    };
-
-    var mouseleave = function mouseleave(d) {
-      Tooltip.style("opacity", 0);
-      d3.selectAll("#viz3 .myArea").style("opacity", 1).style("stroke", "none");
-    };
-
-    g.selectAll("mylayers").data(stackedData).enter().append("path").attr("class", "myArea").style("fill", function (d) {
-      return colorScale(d.key);
-    }).attr("d", area).on("mouseover", mouseover).on("mousemove", mousemove).on("mouseleave", mouseleave);
-  });
+    if (property == "count") {
+      button.setAttribute("value", "proportion");
+      loadViz3("proportion");
+      button.innerHTML = "Total";
+    } else {
+      button.setAttribute("value", "count");
+      loadViz3("count");
+      button.innerHTML = "Proportion";
+    }
+  }
   /**
    *   This function handles the graph's sizing.
    */
 
+
   function setSizing() {
-    var graphWidth = Math.min(self.innerWidth, 1500);
+    var graphWidth = Math.min(self.innerWidth, 1000);
     var graphHeight = graphWidth * 0.6;
     svgSize = {
       width: graphWidth,
@@ -457,14 +480,14 @@ function setXScale(width, data) {
   })).range([0, width]);
 }
 
-function setYScale(height, data, roleGroups) {
+function setYScale(height, data, roleGroups, scaleProperty) {
   // TODO : Define the linear scale in y for the scatter plot
   var range = 0;
   data.forEach(function (d) {
     var rolesSum = 0;
     Object.keys(roleGroups).forEach(function (key) {
-      if (d[key].count) {
-        rolesSum += d[key].count;
+      if (d[key][scaleProperty]) {
+        rolesSum += d[key][scaleProperty];
       }
     });
 
@@ -597,7 +620,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63462" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62014" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

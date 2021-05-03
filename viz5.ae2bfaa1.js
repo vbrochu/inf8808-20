@@ -11864,29 +11864,33 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-var COLORS = ['#fe0002', //red
-'#0100fe', //blue
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+var COLORS = ['#0100fe', //blue
 '#019a01', //green
-'#ff9a00', //orange
-'#ffff01', //yellow
-'#ffcdd0', //pink
-'#980086', //purple
 '#01ffff', //cyan
+'#980086', //purple
+'#94812b', //kaki	
+'#ffff01', //yellow
+'#fe0002', //red
+'#ffcdd0', //pink
+'#ff9a00', //orange
 '#ff804d', //coral
 '#018184', //teal
 '#582900', //brown
 '#000000', //black
 '##020085', //navy
 '#ff83f3', //mauve
-'#ffffff', //white
 '#d3d3d3', //grey
-'#94812b', //kaki
 '#cc5500', //fire
+'#d9d9d9', //light grey
 '#c09628', //gold
-'#293133' //anhtracite
+'#293133' //anthracite
 ];
-var MIN_YEAR = 1900;
-var MAX_YEAR = 2020;
 /**
  * Generates the SVG element g of id viz5 which will contain the histogram.
  *
@@ -11917,7 +11921,7 @@ function appendAxes(g) {
 
 function appendGraphLabels(g) {
   g.append('text').text('Roles').attr('class', 'y axis-text').attr('transform', 'rotate(-90)').attr('fill', '#898989').attr('font-size', 12);
-  g.append('text').text('Years').attr('class', 'title').attr('fill', '#898989');
+  g.append('text').text('Années').attr('class', 'title').attr('fill', 'black');
 }
 /**
  * Sets the size of the SVG canvas containing the histogram.
@@ -11975,8 +11979,30 @@ function drawYAxis(yScale) {
 
 
 function updateXScale(scale, data_career, width) {
-  //ECHELLE FIXE
-  scale.domain([MIN_YEAR, MAX_YEAR]).range([0, width]);
+  var max_annee = 0;
+  var min_annee = 9999;
+  data_career.forEach(function (c) {
+    var annee_sortie = c.film.anneeSortie;
+
+    if (!isNaN(annee_sortie)) {
+      if (annee_sortie < min_annee) {
+        min_annee = annee_sortie;
+      }
+
+      if (annee_sortie > max_annee) {
+        max_annee = annee_sortie;
+      }
+    }
+  });
+
+  if (max_annee - min_annee < 10) {
+    //si carrière peu étendue dans le temps on adapte l'échelle
+    scale.domain([min_annee - 10, max_annee + 10]).range([0, width]);
+  } else {
+    //on calcule la longueur du côté d'un rect
+    var x_length_rect = width / (max_annee - min_annee + 2);
+    scale.domain([min_annee - 1, max_annee + 1]).range([0, width + 2 * x_length_rect]);
+  }
 }
 /**
  * defines the y scale.
@@ -12009,7 +12035,12 @@ function updateYScale(scale, data_career, height) {
   });
 
   if (found) {
-    scale.domain([0, max_roles]).range([height, 0]);
+    if (max_roles < 5) {
+      //si nombre de rôles sur une année faible on prend adapte l'échelle
+      scale.domain([0, 5]).range([height, 0]);
+    } else {
+      scale.domain([0, max_roles]).range([height, 0]);
+    }
   } else {
     scale.domain([0, data_career.length]).range([height, 0]);
   }
@@ -12048,8 +12079,8 @@ function drawHistogram(yScale, xScale, data_career, height, width, colorScale, t
   //dict pour compter le nombre de rôles par année
   //et ajuster y en fonction
   var dict_count = {};
-  var y_length_rect = height / 8;
-  var x_length_rect = width / (MAX_YEAR - MIN_YEAR);
+  var y_length_rect = height / (yScale.domain()[1] - yScale.domain()[0]);
+  var x_length_rect = width / (xScale.domain()[1] - xScale.domain()[0]);
 
   function setY(c) {
     //on màj dict_count
@@ -12074,7 +12105,7 @@ function drawHistogram(yScale, xScale, data_career, height, width, colorScale, t
     if (isNaN(annee_film)) {
       return xScale(1950);
     } else {
-      return xScale(annee_film);
+      return xScale(annee_film) - x_length_rect / 2;
     }
   }
 
@@ -12088,9 +12119,23 @@ function drawHistogram(yScale, xScale, data_career, height, width, colorScale, t
     }
   }
 
+  function handleMouseOver(c, d) {
+    tip.show(c, d);
+    d3.select(d).attr('width', x_length_rect + 2).attr('height', y_length_rect + 2).attr("stroke", "black").attr("stroke-width", 2);
+  }
+
+  function handleMouseOut(c, d) {
+    tip.hide();
+    d3.select(d).attr('width', x_length_rect).attr('height', y_length_rect).attr("stroke", "white").attr("stroke-width", 1);
+  }
+
   d3.select('#histogram-g').selectAll('rect').data(data_career).enter().append('g').attr('class', 'role-rect').append('rect').attr('x', setX).attr('y', setY).attr('width', x_length_rect).attr('height', y_length_rect).attr('fill', function (c) {
     return colorScale(c.fonctionCategory);
-  }).attr("stroke", "white").attr("stroke-width", 1).on("mouseover", tip.show).on("mouseout", tip.hide).style("opacity", setOpacity);
+  }).attr("stroke", "white").attr("stroke-width", 1).on("mouseover", function (c) {
+    handleMouseOver(c, this);
+  }).on("mouseout", function (c) {
+    handleMouseOut(c, this);
+  }).style("opacity", setOpacity);
 }
 /**
  * Draws the legend for the colors of the squares.
@@ -12146,9 +12191,7 @@ function getContentsHistogram(c) {
 
   var dict_filmoId; //associe un nom à sa carrière (roles et films)
 
-  var dict_noms_car; //liste [film id, anneeSortie, participants] triée par années de sortie
-
-  var sorted_filmo_part;
+  var dict_noms_car;
   Promise.all([d3.csv('./Nom.csv'), d3.csv('./Fonction.csv'), d3.csv('./Filmo.csv'), d3.csv('./Filmo_Generique.csv')]).then(function (fichiers) {
     //preoprocess des fichiers
     dict_nomsId = preprocess.buildDictNoms(fichiers[0]);
@@ -12156,16 +12199,75 @@ function getContentsHistogram(c) {
     dict_filmoId = preprocess.buildDictFilmoId(fichiers[2]);
     var aux = preprocess.buildDictCareer(fichiers[3], dict_filmoId, dict_fonctionId, dict_nomsId);
     dict_noms_car = aux[0];
-    sorted_filmo_part = aux[1];
-    buildHistogram();
+    var g = generateGHistogram(margin_histogram);
+    buildHistogram(); //barre de recherche
+
+    var barre_recherche_input = document.getElementById("search-input-viz5"); //construction dun dico associant nom à son id pour reconstruire le graphe
+
+    var dict_noms = {};
+    Object.keys(dict_nomsId).forEach(function (key) {
+      dict_noms[dict_nomsId[key].prenom + ' ' + dict_nomsId[key].nom] = key;
+    });
+    barre_recherche_input.addEventListener('keyup', function () {
+      var suggestions = '';
+      var input = barre_recherche_input.value;
+
+      if (input != '') {
+        var liste_prenom_nom = [];
+        var keys = Object.keys(dict_nomsId);
+        keys.forEach(function (key) {
+          var prenom_nom = dict_nomsId[key].prenom + " " + dict_nomsId[key].nom;
+          liste_prenom_nom.push(prenom_nom);
+        });
+        var guesses = liste_prenom_nom.filter(function (pn) {
+          return pn.toLowerCase().includes(input.toLowerCase());
+        });
+        guesses.slice(0, 5).forEach(function (guess) {
+          suggestions += "\n\t\t\t\t\t<div class='suggestion'>" + guess + "</div>\n\t\t\t\t\t";
+        });
+        document.getElementById('search-suggestions-viz5').innerHTML = suggestions;
+        var coll_sugg = document.getElementsByClassName('suggestion');
+
+        var _iterator = _createForOfIteratorHelper(coll_sugg),
+            _step;
+
+        try {
+          var _loop = function _loop() {
+            var e = _step.value;
+            e.addEventListener("click", function () {
+              d3.selectAll('.role-rect').remove();
+
+              if (dict_noms_car[dict_noms[e.textContent]] != undefined) {
+                adaptHistogram(dict_noms[e.textContent]);
+                document.getElementById('viz5-description').textContent = 'Carrière de ' + e.textContent;
+                d3.selectAll('.suggestion').remove();
+              } else {
+                document.getElementById('viz5-description').textContent = e.textContent + " n'a participé à aucun film de la BDD";
+              }
+            });
+          };
+
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            _loop();
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      } else {
+        //on supprime les suggestions si la barre de recherche est vide
+        document.getElementById('search-suggestions-viz5').innerHTML = '';
+      }
+    });
     /**
      *   This function handles the graph's sizing.
      */
 
     function setSizingHistogram() {
       //boundsHistogram = d3.select('#viz5').node().getBoundingClientRect()
-      var graphWidth = Math.min(self.innerWidth, 1500);
-      var graphHeight = 350;
+      var graphWidth = Math.min(self.innerWidth, 1000);
+      var graphHeight = 600;
       svgSizeHistogram = {
         //width: boundsHistogram.width,
         width: graphWidth,
@@ -12178,24 +12280,32 @@ function getContentsHistogram(c) {
       setCanvasSizeHistogram(svgSizeHistogram.width, svgSizeHistogram.height);
     }
     /**
+        *   This function adapts the histogram to the ID_NOM
+        */
+
+
+    function adaptHistogram(ID_NOM) {
+      updateXScale(xScale, dict_noms_car[ID_NOM], graphSizeHistogram.width);
+      updateYScale(yScale, dict_noms_car[ID_NOM], graphSizeHistogram.height);
+      colorScale = setColorScale(dict_noms_car[ID_NOM], dict_fonctionId);
+      drawXAxis(xScale, graphSizeHistogram.height);
+      drawYAxis(yScale);
+      drawHistogram(yScale, xScale, dict_noms_car[ID_NOM], graphSizeHistogram.height, graphSizeHistogram.width, colorScale, tipHistogram, dict_filmoId); //setRectHoverHandler(tipHistogram)
+
+      drawLegendHistogram(g, colorScale, graphSizeHistogram.width);
+    }
+    /**
      *   This function builds the histogram.
      */
 
 
     function buildHistogram() {
       setSizingHistogram();
-      var g = generateGHistogram(margin_histogram);
       appendAxes(g);
       appendGraphLabels(g);
-      positionLabels(graphSizeHistogram.width, graphSizeHistogram.height);
-      var NOM_TEST = 15334;
-      updateXScale(xScale, dict_noms_car[NOM_TEST], graphSizeHistogram.width);
-      updateYScale(yScale, dict_noms_car[NOM_TEST], graphSizeHistogram.height);
-      colorScale = setColorScale(dict_noms_car[NOM_TEST], dict_fonctionId);
-      drawXAxis(xScale, graphSizeHistogram.height);
-      drawYAxis(yScale);
-      drawHistogram(yScale, xScale, dict_noms_car[NOM_TEST], graphSizeHistogram.height, graphSizeHistogram.width, colorScale, tipHistogram, dict_filmoId);
-      drawLegendHistogram(g, colorScale, graphSizeHistogram.width);
+      positionLabels(graphSizeHistogram.width, graphSizeHistogram.height); //on commence avec Denys Arcand
+
+      adaptHistogram(15334);
     }
   }).catch(function (err) {
     console.log('Les .csv n\'ont pas pu être lus');
@@ -12229,7 +12339,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63462" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62014" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

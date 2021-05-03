@@ -2698,7 +2698,7 @@ function setCanvasSizeWaffle(width, height) {
 
 
 function drawButtonsWaffle(g, roles, width, bounds_width) {
-  var button_width = 130;
+  var button_width = 110;
   var button_height = 25;
   var X = 600;
   var Y = 0;
@@ -2719,13 +2719,13 @@ function drawButtonsWaffle(g, roles, width, bounds_width) {
   }
 
   roles.forEach(function (role) {
-    var button = g.append('g').attr('class', 'button-waffle').attr('id', 'button-waffle-' + role.toLowerCase().replaceAll(" ", "-").replaceAll("é", "e")).attr('transform', 'translate(' + set_pos() + ')').attr('width', 130).attr('height', 25);
-    button.append('rect').attr('width', 130).attr('height', 30).attr('fill', '#f4f6f4').on('mouseenter', function () {
+    var button = g.append('g').attr('class', 'button-waffle').attr('id', 'button-waffle-' + role.toLowerCase().replaceAll(" ", "-").replaceAll("é", "e")).attr('transform', 'translate(' + set_pos() + ')').attr('width', button_width).attr('height', button_height);
+    button.append('rect').attr('width', button_width).attr('height', button_height).attr('fill', '#f4f6f4').on('mouseenter', function () {
       d3.select(this).attr('stroke', '#362023');
     }).on('mouseleave', function () {
       d3.select(this).attr('stroke', '#f4f6f4');
     });
-    button.append('text').attr('x', 65).attr('y', 15).attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').attr('class', 'button-text').text(role).attr('font-size', '10px').attr('fill', '#362023');
+    button.append('text').attr('x', button_width / 2).attr('y', button_height / 2).attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').attr('class', 'button-text').text(role).attr('font-size', '10px').attr('fill', '#362023');
   });
 }
 /**
@@ -2768,7 +2768,21 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
     return i * cote_motif % height;
   }
 
-  d3.select('#waffle-g').selectAll('rect').data(sorted_filmo_part).enter().append('g').attr('class', 'waffle-rect').append('rect').attr('y', setY).attr('x', setX).attr('width', cote_motif).attr('height', cote_motif).attr('fill', setColor).attr("stroke", "white").attr("stroke-width", 1).on("click", tip.show);
+  function handleMouseOver(c, d) {
+    tip.show(c, d);
+    d3.select(d).attr('width', cote_motif + 1).attr('height', cote_motif + 1).attr("stroke", "black");
+  }
+
+  function handleMouseOut(c, d) {
+    tip.hide();
+    d3.select(d).attr('width', cote_motif).attr('height', cote_motif).attr("stroke", "white");
+  }
+
+  d3.select('#waffle-g').selectAll('rect').data(sorted_filmo_part).enter().append('g').attr('class', 'waffle-rect').append('rect').attr('y', setY).attr('x', setX).attr('width', cote_motif).attr('height', cote_motif).attr('fill', setColor).attr("stroke", "white").attr("stroke-width", 1).on("mouseover", function (c) {
+    handleMouseOver(c, this);
+  }).on("mouseout", function (c) {
+    handleMouseOut(c, this);
+  });
 }
 
 (function (d3) {
@@ -2776,7 +2790,7 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
     top: 80,
     right: 0,
     bottom: 80,
-    left: 55
+    left: 50
   };
   var boundsWaffle;
   var svgSizeWaffle;
@@ -2793,9 +2807,7 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
 
   var dict_fonctionId; //associe un id de film ses titre et année de sortie
 
-  var dict_filmoId; //associe un nom à sa carrière (roles et films)
-
-  var dict_noms_car; //liste [film id, anneeSortie, participants] triée par années de sortie
+  var dict_filmoId; //liste [film id, anneeSortie, participants] triée par années de sortie
 
   var sorted_filmo_part;
   var xScale = d3.scaleLinear();
@@ -2805,13 +2817,12 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
     dict_fonctionId = preprocess.buildDictFonctions(fichiers[1]);
     dict_filmoId = preprocess.buildDictFilmoId(fichiers[2]);
     var aux = preprocess.buildDictCareer(fichiers[3], dict_filmoId, dict_fonctionId, dict_nomsId);
-    dict_noms_car = aux[0];
     sorted_filmo_part = aux[1];
     buildWaffle();
 
     function setSizingWaffle() {
       boundsWaffle = d3.select('#viz1').node().getBoundingClientRect();
-      var graphWidth = Math.min(self.innerWidth, 1500);
+      var graphWidth = Math.min(self.innerWidth, 1000);
       var graphHeight = 600;
       svgSizeWaffle = {
         width: graphWidth,
@@ -2880,7 +2891,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63462" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62014" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
