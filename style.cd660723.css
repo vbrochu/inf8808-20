@@ -51,6 +51,10 @@ svg {
     height: 500px;
 }
 
+#viz1 svg {
+    width: 600px;
+}
+
 .d3-tip {
     line-height: 1;
     font-weight: normal;
@@ -150,6 +154,36 @@ h2 {
 .button-waffle.selected rect {
     stroke-width:2;
     stroke:rgb(56, 176, 222);
+}
+
+#btn-group-viz1{
+	overflow-y: scroll;
+	height:500px;
+	width:200px;
+    background-color: #3d3d85;
+}
+
+#btn-group-viz1 button {
+	background-color: #f4f6f4;
+	border: 1px solid black;
+	padding: 10px 20px;
+	width: 100%;
+	display: block;
+	background-color: #3d3d85; /*#d4faf8;*/
+	color:white;
+}
+
+#btn-group-viz1 button.selected {
+	background-color: #5d5da5; /*#d4faf8;*/
+}
+
+#btn-group-viz1 button:not(:last-child) {
+	border-bottom: none;
+}
+
+
+#btn-group-viz1 button:hover {
+	background-color: #362023;
 }
 
 /*# sourceMappingURL=/style.cd660723.css.map */
