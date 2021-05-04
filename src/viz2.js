@@ -44,7 +44,8 @@ d3.csv('./data2.csv').then((data) => {
       .attr("x", function(d) { return x(d.terme); })
       .attr("width", x.bandwidth())
       .attr("y", function(d) { return y(d.count); })
-      .attr("height", function(d) { return height - y(d.count); });
+      .attr("height", function(d) { return height - y(d.count); })
+      .attr("fill", "#4646c7");;
 
   // add the x Axis
   svg.append("g")

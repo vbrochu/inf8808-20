@@ -134,7 +134,8 @@ h2 {
 }
 
 .toggle-button {
-    width: 30%;
+    min-width: 30%;
+    width: 200px;
     height: 30px;
     background-color: rgb(53, 97, 143);
     border: 2px solid rgb(53, 97, 143);
@@ -160,7 +161,7 @@ h2 {
 	overflow-y: scroll;
 	height:500px;
 	width:200px;
-    background-color: #3d3d85;
+    background-color: rgb(53, 97, 143);
 }
 
 #btn-group-viz1 button {
@@ -169,7 +170,7 @@ h2 {
 	padding: 10px 20px;
 	width: 100%;
 	display: block;
-	background-color: #3d3d85; /*#d4faf8;*/
+	background-color: rgb(53, 97, 143); /*#d4faf8;*/
 	color:white;
 }
 
