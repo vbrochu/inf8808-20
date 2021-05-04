@@ -156,7 +156,8 @@ d3.csv('./data2.csv').then(function (data) {
     return y(d.count);
   }).attr("height", function (d) {
     return height - y(d.count);
-  }); // add the x Axis
+  }).attr("fill", "#4646c7");
+  ; // add the x Axis
 
   svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x)).selectAll("text").style("text-anchor", "end").attr("dx", "-.8em").attr("dy", ".15em").attr("transform", "rotate(-65)").style("font-size", 14); // add the y Axis
 
