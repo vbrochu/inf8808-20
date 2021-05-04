@@ -12297,11 +12297,11 @@ function getContentsMatrix(c) {
     d3.select('#viz4 .toggle-button').on('click', function () {
       if (MODE == 'top_poly') {
         MODE = 'top_actif';
-        document.getElementById('viz4-description').textContent = 'Personnes les plus actives.';
+        document.getElementById('viz4-description').textContent = 'Ci-contre, les personnes ayant eu le plus d\'implications au cours de leur carrière.';
         document.getElementById('viz4-btn').textContent = 'Voir polyvalence';
       } else {
         MODE = 'top_poly';
-        document.getElementById('viz4-description').textContent = 'Personnes ayant exercé le plus de rôles différents.';
+        document.getElementById('viz4-description').textContent = 'Ci-contre, les personnes ayant exercé le plus de rôles différents.';
         document.getElementById('viz4-btn').textContent = 'Voir activité globale';
       }
 
