@@ -2608,7 +2608,6 @@ exports.drawXAxis = drawXAxis;
 exports.getContentsWaffle = getContentsWaffle;
 exports.generateG = generateG;
 exports.setCanvasSizeWaffle = setCanvasSizeWaffle;
-exports.drawButtonsWaffle = drawButtonsWaffle;
 exports.draw = draw;
 
 var preprocess = _interopRequireWildcard(require("./preprocess.js"));
@@ -2620,6 +2619,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 /*
  * Appends an SVG g element which will contain the y axis.
@@ -2639,7 +2644,7 @@ function appendAxes(g) {
 
 function updateXScale(scale, width) {
   //ECHELLE FIXE
-  scale.domain([1985, 2019]).range([0, 414]);
+  scale.domain([1985, 2019]).range([0, 547]);
 }
 /**
  * Draws the X axis at the bottom of the diagram.
@@ -2690,42 +2695,18 @@ function setCanvasSizeWaffle(width, height) {
 /**
  * Draws the buttons to select the roles.
  *
- * @param {*} g The d3 Selection of the graph's g SVG element
  * @param {object[]} roles The roles to display
- * @param {number} width The width of the graph, used to place the button
- * @param {number} bounds_width The width of the screen
  */
 
 
-function drawButtonsWaffle(g, roles, width, bounds_width) {
-  var button_width = 110;
-  var button_height = 18;
-  var X = 440;
-  var Y = -20;
-  var maxY = 390;
-  var res;
-
-  function set_pos() {
-    if (Y < maxY) {
-      res = X + ',' + Y;
-      Y = Y + button_height;
-    } else {
-      Y = -20;
-      X = X + button_width;
-      res = X + ',' + Y;
-    }
-
-    return res;
-  }
-
+function drawButtons(roles) {
+  var button_group = document.getElementById('btn-group-viz1');
   roles.forEach(function (role) {
-    var button = g.append('g').attr('class', 'button-waffle').attr('id', 'button-waffle-' + role.toLowerCase().replaceAll(" ", "-").replaceAll("é", "e")).attr('transform', 'translate(' + set_pos() + ')').attr('width', button_width).attr('height', button_height);
-    button.append('rect').attr('width', button_width).attr('height', button_height).attr('fill', '#f4f6f4').on('mouseenter', function () {
-      d3.select(this).attr('stroke', '#362023');
-    }).on('mouseleave', function () {
-      d3.select(this).attr('stroke', '#f4f6f4');
-    });
-    button.append('text').attr('x', button_width / 2).attr('y', Math.round(button_height / 2)).attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').attr('class', 'button-text').text(role).attr('font-size', '10px').attr('fill', '#362023');
+    var button_role = document.createElement('button');
+    button_role.setAttribute('class', 'btn-viz1');
+    button_role.setAttribute('value', role);
+    button_role.textContent = role;
+    button_group.appendChild(button_role);
   });
 }
 /**
@@ -2734,11 +2715,12 @@ function drawButtonsWaffle(g, roles, width, bounds_width) {
  * @param {number} height The height of the graph
  * @param {number} width The width of the graph
  * @param {string} essential_function Fonction we have to see if it is essential or not
+ * @param {object} tip top be shown when a square is hovered
  */
 
 
 function draw(sorted_filmo_part, height, width, essential_function, tip) {
-  var cote_motif = 4;
+  var cote_motif = 5;
   var trunc_width = Math.trunc(width);
 
   function setColor(e) {
@@ -2787,10 +2769,10 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
 
 (function (d3) {
   var margin_waffle = {
-    top: 80,
+    top: 20,
     right: 0,
     bottom: 80,
-    left: 50
+    left: 30
   };
   var boundsWaffle;
   var svgSizeWaffle;
@@ -2822,8 +2804,8 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
 
     function setSizingWaffle() {
       boundsWaffle = d3.select('#viz1').node().getBoundingClientRect();
-      var graphWidth = 400;
-      var graphHeight = 550;
+      var graphWidth = Math.min(self.innerWidth, 800);
+      var graphHeight = 560;
       svgSizeWaffle = {
         width: graphWidth,
         height: graphHeight
@@ -2834,31 +2816,45 @@ function draw(sorted_filmo_part, height, width, essential_function, tip) {
       };
       setCanvasSizeWaffle(svgSizeWaffle.width, svgSizeWaffle.height);
     }
-
-    function setClickHandlerWaffle(role) {
-      var roleID = role.toLowerCase().replaceAll(" ", "-").replaceAll("é", "e");
-      d3.select('#button-waffle-' + roleID).on('click', function () {
-        d3.selectAll('.button-waffle').classed("selected", false);
-        d3.select('#button-waffle-' + roleID).classed("selected", true);
-        d3.selectAll('.waffle-rect').remove();
-        draw(sorted_filmo_part, graphSizeWaffle.height, graphSizeWaffle.width, role, tipWaffle);
-      });
-    }
-
-    d3.select('#button-waffle-musique').on("click")();
     /**
      *   This function builds the graph.
      */
+
 
     function buildWaffle() {
       setSizingWaffle();
       var g = generateG(margin_waffle);
       var roles = Object.values(dict_fonctionId);
-      drawButtonsWaffle(g, roles, graphSizeWaffle.width, boundsWaffle.width);
       draw(sorted_filmo_part, graphSizeWaffle.height, graphSizeWaffle.width, 'Chroniqueur', tipWaffle);
-      roles.forEach(function (role) {
-        return setClickHandlerWaffle(role);
-      });
+      drawButtons(roles);
+      var coll_btn = document.getElementsByClassName('btn-viz1');
+
+      var _iterator = _createForOfIteratorHelper(coll_btn),
+          _step;
+
+      try {
+        var _loop = function _loop() {
+          var e = _step.value;
+          e.addEventListener("click", function () {
+            d3.selectAll('.waffle-rect').remove();
+            d3.selectAll('.btn-viz1').classed('selected', false);
+            document.getElementById('btn-group-viz1').scroll(0, e.offsetTop - 813 - 250);
+            d3.select(e).classed('selected', true);
+            draw(sorted_filmo_part, graphSizeWaffle.height, graphSizeWaffle.width, e.textContent, tipWaffle);
+          });
+        };
+
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          _loop();
+        } //Click on musique as example
+
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      document.querySelector('.btn-viz1[value=Musique]').click();
       updateXScale(xScale, graphSizeWaffle.width);
       appendAxes(g);
       drawXAxis(xScale, graphSizeWaffle.height);
